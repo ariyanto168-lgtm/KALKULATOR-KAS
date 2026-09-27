@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kas - Fast UI Offline First</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- Header & Status Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2.5">
+                <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md">
+                    <i class="fa-solid fa-wallet text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-900 tracking-tight">Kalkulator Kas</h1>
+                    <p class="text-xs font-semibold text-indigo-600">v1.1.0</p>
+                </div>
+            </div>
+            <!-- Indikator Status & Powered By -->
+            <div class="flex flex-col items-end">
+                <div id="sync-status" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 transition-all duration-300">
+                    <span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="status-text">Tersimpan</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium mt-1">Powered by Ari GPM</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-grow space-y-6">
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard-section" class="space-y-4">
+            <!-- 1. Kartu Dashboard Utama: Total Saldo Kas -->
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-4 -bottom-4 text-white/10 text-7xl"><i class="fa-solid fa-vault"></i></div>
+                <div>
+                    <p class="text-xs uppercase tracking-wider font-medium text-blue-100">Total Saldo Kas</p>
+                    <h2 id="card-saldo" class="text-3xl sm:text-4xl font-bold mt-1 tracking-tight">Rp 0</h2>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-xs text-blue-100">
+                    <span><i class="fa-solid fa-chart-line mr-1.5"></i> Real-time kalkulasi</span>
+                    <span id="tx-count" class="bg-white/20 px-2.5 py-0.5 rounded-full font-medium">0 transaksi</span>
+                </div>
+            </div>
+
+            <!-- 2. Tombol Pemasukan & Pengeluaran Berdampingan di Bawah Saldo -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Tombol Kartu Pemasukan (Hijau) -->
+                <button onclick="openForm('IN')" class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
+                    <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div class="flex items-center space-x-1.5 text-emerald-100 text-xs font-semibold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>Pemasukan</span>
+                    </div>
+                    <div class="text-base sm:text-lg font-bold tracking-tight">+ Input Masuk</div>
+                </button>
+
+                <!-- Tombol Kartu Pengeluaran (Merah) -->
+                <button onclick="openForm('OUT')" class="bg-gradient-to-br from-rose-500 to-pink-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
+                    <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                    <div class="flex items-center space-x-1.5 text-rose-100 text-xs font-semibold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-circle-minus"></i>
+                        <span>Pengeluaran</span>
+                    </div>
+                    <div class="text-base sm:text-lg font-bold tracking-tight">- Input Keluar</div>
+                </button>
+            </div>
+
+            <!-- 3. Kartu Info Akumulasi (Masuk & Keluar) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Pemasukan</p>
+                        <h4 id="card-masuk" class="text-lg font-bold text-emerald-600 mt-0.5">Rp 0</h4>
+                    </div>
+                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl"><i class="fa-solid fa-arrow-down text-lg"></i></div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Pengeluaran</p>
+                        <h4 id="card-keluar" class="text-lg font-bold text-rose-600 mt-0.5">Rp 0</h4>
+                    </div>
+                    <div class="bg-rose-50 text-rose-600 p-3 rounded-xl"><i class="fa-solid fa-arrow-up text-lg"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Input Transaksi (Disembunyikan secara default) -->
+        <section id="form-section" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-200 transition-all duration-300">
+            <h3 id="form-title" class="font-semibold text-slate-800 mb-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <i id="form-icon" class="fa-solid fa-circle-plus text-emerald-600 mr-2"></i> 
+                    <span id="form-title-text">Input Pemasukan Baru</span>
+                </div>
+                <button type="button" onclick="closeForm()" class="text-slate-400 hover:text-slate-600 text-sm cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i> Batal
+                </button>
+            </h3>
+            <form id="transaction-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Nominal (Rp)</label>
+                    <input type="number" id="tx-amount" min="1" required placeholder="Contoh: 50000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Uraian / Keterangan</label>
+                    <input type="text" id="tx-desc" required placeholder="Contoh: Penjualan produk / Beli ATK kantor" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="submit" id="submit-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center cursor-pointer">
+                        <i class="fa-solid fa-plus mr-2"></i> Simpan Pemasukan
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Tombol Riwayat Transaksi di Paling Bawah -->
+        <section class="pt-2">
+            <button onclick="toggleHistory()" class="w-full bg-gradient-to-br from-indigo-600 to-violet-800 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between">
+                <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div>
+                    <div class="flex items-center space-x-1.5 text-indigo-100 text-xs font-semibold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Riwayat</span>
+                    </div>
+                    <div class="text-base sm:text-lg font-bold tracking-tight" id="history-btn-text">Tampilkan Riwayat Transaksi</div>
+                </div>
+                <div class="bg-white/20 p-3 rounded-xl text-white">
+                    <i id="history-icon" class="fa-solid fa-chevron-down"></i>
+                </div>
+            </button>
+        </section>
+
+        <!-- Bagian Riwayat Transaksi (Disembunyikan secara default, muncul saat tombol diklik) -->
+        <section id="history-section" class="hidden space-y-3 transition-all duration-300">
+            <div class="flex justify-between items-center px-1">
+                <h3 class="font-semibold text-slate-800 flex items-center text-sm uppercase tracking-wider">
+                    <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat Transaksi
+                </h3>
+                <span id="tx-count-label" class="text-xs bg-slate-200/70 text-slate-600 px-2.5 py-1 rounded-full font-medium">0 transaksi</span>
+            </div>
+            
+            <!-- Container Daftar Kartu Riwayat -->
+            <div id="transaction-list" class="space-y-3">
+                <!-- Kartu riwayat akan dimasukkan secara dinamis di sini -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Tombol Mengambang (Floating Scroll-to-Top Button) -->
+    <button id="scroll-top-btn" onclick="scrollToTop()" class="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform scale-0 z-50 cursor-pointer">
+        <i class="fa-solid fa-arrow-up text-lg"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 mt-8">
+        Kalkulator Kas &bull; Offline-First & Fast-UI Decoupled Architecture
+    </footer>
+
+    <!-- JavaScript Utama -->
+    <script>
+        // ==========================================
+        // URL GAS WEB APP ANDA
+        // ==========================================
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgS3ze4fXnVIIPRa7_AgtzNrk4M5Z-GLOrEFBpgpNFYVQTx1FLjJx6qy6hdeTSI4Di/exec";
+
+        // Local Storage Keys
+        const STORAGE_KEY_TX = "cash_app_transactions";
+        const STORAGE_KEY_QUEUE = "cash_app_queue";
+
+        // State Aplikasi
+        let transactions = [];
+        let pendingQueue = [];
+        let currentType = 'IN';
+
+        // Format Rupiah
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        // Buka Form Input dan Munculkan Sekaligus
+        function openForm(type) {
+            currentType = type;
+            
+            // Sembunyikan riwayat saat membuka form
+            document.getElementById("history-section").classList.add("hidden");
+            document.getElementById("history-btn-text").textContent = "Tampilkan Riwayat Transaksi";
+            document.getElementById("history-icon").className = "fa-solid fa-chevron-down";
+
+            const formSection = document.getElementById("form-section");
+            const formTitleText = document.getElementById("form-title-text");
+            const formIcon = document.getElementById("form-icon");
+            const submitBtn = document.getElementById("submit-btn");
+
+            formSection.classList.remove("hidden");
+
+            if (type === 'IN') {
+                formTitleText.textContent = "Input Pemasukan Baru";
+                formIcon.className = "fa-solid fa-circle-plus text-emerald-600 mr-2";
+                submitBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center cursor-pointer";
+                submitBtn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i> Simpan Pemasukan';
+            } else {
+                formTitleText.textContent = "Input Pengeluaran Baru";
+                formIcon.className = "fa-solid fa-circle-minus text-rose-600 mr-2";
+                submitBtn.className = "bg-rose-600 hover:bg-rose-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center cursor-pointer";
+                submitBtn.innerHTML = '<i class="fa-solid fa-minus mr-2"></i> Simpan Pengeluaran';
+            }
+
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.getElementById("tx-amount").focus();
+        }
+
+        // Tutup / Sembunyikan Form
+        function closeForm() {
+            const formSection = document.getElementById("form-section");
+            formSection.classList.add("hidden");
+            document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Toggle Tampilkan / Sembunyikan Riwayat Transaksi
+        function toggleHistory() {
+            const historySection = document.getElementById("history-section");
+            const btnText = document.getElementById("history-btn-text");
+            const historyIcon = document.getElementById("history-icon");
+
+            // Tutup form input jika sedang terbuka
+            document.getElementById("form-section").classList.add("hidden");
+
+            if (historySection.classList.contains("hidden")) {
+                historySection.classList.remove("hidden");
+                btnText.textContent = "Sembunyikan Riwayat Transaksi";
+                historyIcon.className = "fa-solid fa-chevron-up";
+                historySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                historySection.classList.add("hidden");
+                btnText.textContent = "Tampilkan Riwayat Transaksi";
+                historyIcon.className = "fa-solid fa-chevron-down";
+                document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Fungsi Scroll ke Atas Instan
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Deteksi Posisi Scroll untuk Munculkan / Sembunyikan Tombol Panah ke Atas
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scroll-top-btn');
+            if (window.scrollY > 250) {
+                btn.classList.remove('scale-0');
+                btn.classList.add('scale-100');
+            } else {
+                btn.classList.remove('scale-100');
+                btn.classList.add('scale-0');
+            }
+        });
+
+        // Update Indikator Status
+        function updateStatus(state) {
+            const badge = document.getElementById("sync-status");
+            const dot = document.getElementById("status-dot");
+            const text = document.getElementById("status-text");
+
+            if (!navigator.onLine) {
+                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 transition-all duration-300";
+                dot.className = "w-2 h-2 rounded-full bg-amber-500";
+                text.textContent = "Offline";
+                return;
+            }
+
+            if (state === "syncing") {
+                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 transition-all duration-300";
+                dot.className = "w-2 h-2 rounded-full bg-blue-500 animate-pulse";
+                text.textContent = "Menyinkronkan...";
+            } else if (state === "synced") {
+                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 transition-all duration-300";
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+                text.textContent = "Tersinkron";
+                setTimeout(() => updateStatus("saved"), 3000);
+            } else {
+                badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 transition-all duration-300";
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+                text.textContent = "Tersimpan";
+            }
+        }
+
+        // Render UI Dashboard dan Kartu Riwayat Transaksi
+        function renderUI() {
+            let totalMasuk = 0;
+            let totalKeluar = 0;
+
+            const listEl = document.getElementById("transaction-list");
+            listEl.innerHTML = "";
+
+            const sortedTx = [...transactions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            if (sortedTx.length === 0) {
+                listEl.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center text-slate-400 text-sm shadow-sm">
+                        Belum ada data transaksi kas.
+                    </div>`;
+            } else {
+                sortedTx.forEach(tx => {
+                    if (tx.type === "IN") {
+                        totalMasuk += tx.amount;
+                    } else {
+                        totalKeluar += tx.amount;
+                    }
+
+                    const card = document.createElement("div");
+                    card.className = "bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-slate-300 transition-all";
+                    card.innerHTML = `
+                        <div class="flex items-center space-x-3.5">
+                            <div class="${tx.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} p-3 rounded-xl flex-shrink-0">
+                                <i class="fa-solid ${tx.type === 'IN' ? 'fa-arrow-down' : 'fa-arrow-up'} text-base"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-800 text-sm">${escapeHtml(tx.description)}</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">${tx.date} &bull; <span class="${tx.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'} font-medium">${tx.type === 'IN' ? 'Pemasukan' : 'Pengeluaran'}</span></p>
+                            </div>
+                        </div>
+                        <div class="text-right font-bold text-sm sm:text-base ${tx.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${tx.type === 'IN' ? '+' : '-'} ${formatRupiah(tx.amount)}
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+            }
+
+            const totalSaldo = totalMasuk - totalKeluar;
+
+            document.getElementById("card-saldo").textContent = formatRupiah(totalSaldo);
+            document.getElementById("card-masuk").textContent = formatRupiah(totalMasuk);
+            document.getElementById("card-keluar").textContent = formatRupiah(totalKeluar);
+            document.getElementById("tx-count").textContent = `${transactions.length} transaksi`;
+            document.getElementById("tx-count-label").textContent = `${transactions.length} transaksi`;
+        }
+
+        // Helper escape HTML untuk mencegah XSS
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Load Cache saat Aplikasi Dibuka (Fast-UI)
+        function loadCache() {
+            const cachedTx = localStorage.getItem(STORAGE_KEY_TX);
+            const cachedQueue = localStorage.getItem(STORAGE_KEY_QUEUE);
+
+            if (cachedTx) {
+                transactions = JSON.parse(cachedTx);
+            }
+            if (cachedQueue) {
+                pendingQueue = JSON.parse(cachedQueue);
+            }
+
+            renderUI();
+        }
+
+        // Simpan Cache Lokal
+        function saveCache() {
+            localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
+            localStorage.setItem(STORAGE_KEY_QUEUE, JSON.stringify(pendingQueue));
+        }
+
+        // Sinkronisasi Background dengan GAS
+        async function syncQueue() {
+            if (!navigator.onLine || pendingQueue.length === 0) return;
+
+            updateStatus("syncing");
+            const item = pendingQueue[0];
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(item)
+                });
+
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    pendingQueue.shift();
+                    saveCache();
+
+                    if (pendingQueue.length > 0) {
+                        syncQueue();
+                    } else {
+                        updateStatus("synced");
+                        fetchLatestFromServer();
+                    }
+                } else {
+                    updateStatus("saved");
+                }
+            } catch (error) {
+                console.error("Gagal sinkronisasi:", error);
+                updateStatus("offline");
+            }
+        }
+
+        // Ambil data terbaru dari Server di Background
+        async function fetchLatestFromServer() {
+            if (!navigator.onLine) return;
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL);
+                const result = await response.json();
+
+                if (result.status === "success" && Array.isArray(result.data)) {
+                    const pendingIds = new Set(pendingQueue.map(p => p.id));
+                    const serverData = result.data;
+                    const localPendingItems = transactions.filter(t => pendingIds.has(t.id));
+                    
+                    const map = new Map();
+                    serverData.forEach(item => map.set(item.id, item));
+                    localPendingItems.forEach(item => map.set(item.id, item));
+
+                    transactions = Array.from(map.values());
+                    saveCache();
+                    renderUI();
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data terbaru:", error);
+            }
+        }
+
+        // Event Listener Form Submit (Optimistic UI & Sembunyikan Form setelah Input)
+        document.getElementById("transaction-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const amount = Number(document.getElementById("tx-amount").value);
+            const description = document.getElementById("tx-desc").value.trim();
+
+            if (!amount || !description) return;
+
+            const now = new Date();
+            const newTx = {
+                id: "TX-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
+                type: currentType,
+                amount: amount,
+                description: description,
+                timestamp: now.toISOString(),
+                date: now.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })
+            };
+
+            transactions.push(newTx);
+            pendingQueue.push(newTx);
+            saveCache();
+            renderUI();
+
+            // Reset Form Input
+            document.getElementById("tx-amount").value = "";
+            document.getElementById("tx-desc").value = "";
+
+            // Sembunyikan form kembali dan scroll ke dashboard utama
+            document.getElementById("form-section").classList.add("hidden");
+            document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            syncQueue();
+        });
+
+        window.addEventListener('online', () => {
+            updateStatus("syncing");
+            syncQueue();
+            fetchLatestFromServer();
+        });
+
+        window.addEventListener('offline', () => {
+            updateStatus("offline");
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCache();
+            if (navigator.onLine) {
+                fetchLatestFromServer();
+                if (pendingQueue.length > 0) {
+                    syncQueue();
+                }
+            } else {
+                updateStatus("offline");
+            }
+        });
+    </script>
+</body>
+</html>
