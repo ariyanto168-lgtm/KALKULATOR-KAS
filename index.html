@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg text-white tracking-tight">Kalkulator Kas</h1>
-                    <p class="text-xs font-semibold text-indigo-200">v1.1.0</p>
+                    <p class="text-xs font-semibold text-indigo-200">v1.2.0</p>
                 </div>
             </div>
             <!-- Indikator Status & Powered By -->
@@ -80,7 +80,7 @@
                 </button>
             </div>
 
-            <!-- 3. Kartu Info Akumulasi Berwarna Putih (Pemasukan & Pengeluaran) -->
+            <!-- 3. Kartu Info Akumulasi Putih (Pemasukan & Pengeluaran) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Kartu Total Pemasukan Putih -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
@@ -151,9 +151,15 @@
         <section id="history-section" class="hidden space-y-3 transition-all duration-300">
             <div class="flex justify-between items-center px-1">
                 <h3 class="font-semibold text-slate-800 flex items-center text-sm uppercase tracking-wider">
-                    <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat Transaksi
+                    <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat
                 </h3>
-                <span id="tx-count-label" class="text-xs bg-slate-200/70 text-slate-600 px-2.5 py-1 rounded-full font-medium">0 transaksi</span>
+                <div class="flex items-center space-x-2">
+                    <!-- Tombol Reset Histori -->
+                    <button onclick="resetHistory()" class="text-xs bg-rose-50 text-rose-600 hover:bg-rose-100 px-2.5 py-1 rounded-full font-medium transition-colors cursor-pointer flex items-center">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Reset
+                    </button>
+                    <span id="tx-count-label" class="text-xs bg-slate-200/70 text-slate-600 px-2.5 py-1 rounded-full font-medium">0 transaksi</span>
+                </div>
             </div>
             
             <!-- Container Daftar Kartu Riwayat -->
@@ -253,6 +259,25 @@
                 btnText.textContent = "Tampilkan Riwayat Transaksi";
                 historyIcon.className = "fa-solid fa-chevron-down";
                 document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Fungsi Reset Histori Lokal
+        function resetHistory() {
+            if (confirm("Apakah Anda yakin ingin mereset dan menghapus seluruh histori transaksi lokal?")) {
+                localStorage.removeItem(STORAGE_KEY_TX);
+                localStorage.removeItem(STORAGE_KEY_QUEUE);
+                transactions = [];
+                pendingQueue = [];
+                renderUI();
+                
+                // Sembunyikan kembali bagian riwayat setelah reset
+                document.getElementById("history-section").classList.add("hidden");
+                document.getElementById("history-btn-text").textContent = "Tampilkan Riwayat Transaksi";
+                document.getElementById("history-icon").className = "fa-solid fa-chevron-down";
+                document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                alert("Histori transaksi berhasil direset.");
             }
         }
 
