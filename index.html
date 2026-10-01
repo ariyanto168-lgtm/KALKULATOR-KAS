@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Kas - Fast UI Offline First</title>
+    <title>Kalkulator Kas - Multi-User Mandiri</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome untuk ikon -->
@@ -16,7 +16,7 @@
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
 
-    <!-- Header & Status Bar (Berwarna / Full Color) -->
+    <!-- Header & Status Bar (Full Color) -->
     <header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 text-white border-b border-indigo-700 sticky top-0 z-30 shadow-md">
         <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2.5">
@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg text-white tracking-tight">Kalkulator Kas</h1>
-                    <p class="text-xs font-semibold text-indigo-200">v1.2.0</p>
+                    <p class="text-xs font-semibold text-indigo-200">v1.5.0</p>
                 </div>
             </div>
             <!-- Indikator Status & Powered By -->
@@ -52,7 +52,7 @@
                     <h2 id="card-saldo" class="text-3xl sm:text-4xl font-bold mt-1 tracking-tight">Rp 0</h2>
                 </div>
                 <div class="mt-4 flex items-center justify-between text-xs text-blue-100">
-                    <span><i class="fa-solid fa-chart-line mr-1.5"></i> Real-time kalkulasi</span>
+                    <span><i class="fa-solid fa-shield-halved mr-1.5"></i> Data Mandiri & Aman</span>
                     <span id="tx-count" class="bg-white/20 px-2.5 py-0.5 rounded-full font-medium">0 transaksi</span>
                 </div>
             </div>
@@ -80,9 +80,8 @@
                 </button>
             </div>
 
-            <!-- 3. Kartu Info Akumulasi Putih (Pemasukan & Pengeluaran) -->
+            <!-- 3. Kartu Info Akumulasi Warna Putih (Masuk & Keluar) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Kartu Total Pemasukan Putih -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Pemasukan</p>
@@ -90,8 +89,6 @@
                     </div>
                     <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl"><i class="fa-solid fa-arrow-down text-lg"></i></div>
                 </div>
-
-                <!-- Kartu Total Pengeluaran Putih -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Pengeluaran</p>
@@ -151,7 +148,7 @@
         <section id="history-section" class="hidden space-y-3 transition-all duration-300">
             <div class="flex justify-between items-center px-1">
                 <h3 class="font-semibold text-slate-800 flex items-center text-sm uppercase tracking-wider">
-                    <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat
+                    <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat Transaksi
                 </h3>
                 <div class="flex items-center space-x-2">
                     <!-- Tombol Reset Histori -->
@@ -177,7 +174,7 @@
 
     <!-- Footer -->
     <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 mt-8">
-        Kalkulator Kas &bull; Offline-First & Fast-UI Decoupled Architecture
+        Kalkulator Kas &bull; Multi-User Mandiri Architecture
     </footer>
 
     <!-- JavaScript Utama -->
@@ -185,11 +182,23 @@
         // ==========================================
         // URL GAS WEB APP ANDA
         // ==========================================
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgS3ze4fXnVIIPRa7_AgtzNrk4M5Z-GLOrEFBpgpNFYVQTx1FLjJx6qy6hdeTSI4Di/exec";
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgS3ze4fXnVIIPRa7_AgtzNrk4M5Z-GLOrEFBpgpNFYVQTx1FLjJx6qy6hdeTSI4Di/exec";[cite: 7]
+
+        // Sistem User ID Otomatis Berdasarkan Perangkat (Tanpa Perlu Setup Manual)
+        const STORAGE_KEY_USER_ID = "cash_app_device_uuid";
+        function getUserId() {
+            let uid = localStorage.getItem(STORAGE_KEY_USER_ID);
+            if (!uid) {
+                uid = "USR-" + Date.now() + "-" + Math.random().toString(36).substring(2, 9);
+                localStorage.setItem(STORAGE_KEY_USER_ID, uid);
+            }
+            return uid;
+        }
+        const USER_ID = getUserId();
 
         // Local Storage Keys
-        const STORAGE_KEY_TX = "cash_app_transactions";
-        const STORAGE_KEY_QUEUE = "cash_app_queue";
+        const STORAGE_KEY_TX = "cash_app_transactions_v5";
+        const STORAGE_KEY_QUEUE = "cash_app_queue_v5";
 
         // State Aplikasi
         let transactions = [];
@@ -262,21 +271,30 @@
             }
         }
 
-        // Fungsi Reset Histori Lokal
-        function resetHistory() {
-            if (confirm("Apakah Anda yakin ingin mereset dan menghapus seluruh histori transaksi lokal?")) {
+        // Fungsi Reset Histori (Lokal & Server Google Sheets)
+        async function resetHistory() {
+            if (confirm("Apakah Anda yakin ingin mereset dan menghapus seluruh histori transaksi Anda secara permanen?")) {
                 localStorage.removeItem(STORAGE_KEY_TX);
                 localStorage.removeItem(STORAGE_KEY_QUEUE);
                 transactions = [];
                 pendingQueue = [];
                 renderUI();
                 
-                // Sembunyikan kembali bagian riwayat setelah reset
+                if (navigator.onLine) {
+                    try {
+                        await fetch(GAS_WEB_APP_URL, {
+                            method: "POST",
+                            body: JSON.stringify({ action: "reset", userId: USER_ID })
+                        });
+                    } catch (error) {
+                        console.error("Gagal mereset server:", error);
+                    }
+                }
+
                 document.getElementById("history-section").classList.add("hidden");
                 document.getElementById("history-btn-text").textContent = "Tampilkan Riwayat Transaksi";
                 document.getElementById("history-icon").className = "fa-solid fa-chevron-down";
                 document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
                 alert("Histori transaksi berhasil direset.");
             }
         }
@@ -411,6 +429,7 @@
 
             updateStatus("syncing");
             const item = pendingQueue[0];
+            item.userId = USER_ID;
 
             try {
                 const response = await fetch(GAS_WEB_APP_URL, {
@@ -439,12 +458,12 @@
             }
         }
 
-        // Ambil data terbaru dari Server di Background
+        // Ambil data terbaru dari Server di Background (difilter berdasarkan USER_ID)
         async function fetchLatestFromServer() {
             if (!navigator.onLine) return;
 
             try {
-                const response = await fetch(GAS_WEB_APP_URL);
+                const response = await fetch(`${GAS_WEB_APP_URL}?userId=${USER_ID}`);
                 const result = await response.json();
 
                 if (result.status === "success" && Array.isArray(result.data)) {
@@ -520,6 +539,10 @@
             } else {
                 updateStatus("offline");
             }
+        });
+
+        window.addEventListener('focus', () => {
+            fetchLatestFromServer();
         });
     </script>
 </body>
