@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg text-white tracking-tight">Kalkulator Kas</h1>
-                    <p class="text-xs font-semibold text-indigo-200">v1.7.0</p>
+                    <p class="text-xs font-semibold text-indigo-200">v1.5.0</p>
                 </div>
             </div>
             <!-- Indikator Status & Powered By -->
@@ -57,8 +57,9 @@
                 </div>
             </div>
 
-            <!-- 2. Tombol Pemasukan & Pengeluaran Berdampingan -->
+            <!-- 2. Tombol Pemasukan & Pengeluaran Berdampingan di Bawah Saldo -->
             <div class="grid grid-cols-2 gap-4">
+                <!-- Tombol Kartu Pemasukan (Hijau) -->
                 <button onclick="openForm('IN')" class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
                     <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-trend-up"></i></div>
                     <div class="flex items-center space-x-1.5 text-emerald-100 text-xs font-semibold uppercase tracking-wider mb-1">
@@ -68,6 +69,7 @@
                     <div class="text-base sm:text-lg font-bold tracking-tight">+ Input Masuk</div>
                 </button>
 
+                <!-- Tombol Kartu Pengeluaran (Merah) -->
                 <button onclick="openForm('OUT')" class="bg-gradient-to-br from-rose-500 to-pink-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
                     <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-trend-down"></i></div>
                     <div class="flex items-center space-x-1.5 text-rose-100 text-xs font-semibold uppercase tracking-wider mb-1">
@@ -78,29 +80,26 @@
                 </button>
             </div>
 
-            <!-- 3. Kartu Info Akumulasi (Dapat diklik untuk filter riwayat) -->
+            <!-- 3. Kartu Info Akumulasi Warna Putih (Masuk & Keluar) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Kartu Total Pemasukan -->
-                <div onclick="filterHistory('IN')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider group-hover:text-emerald-600 transition-colors">Total Pemasukan (Klik)</p>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Pemasukan</p>
                         <h4 id="card-masuk" class="text-lg font-bold text-emerald-600 mt-0.5">Rp 0</h4>
                     </div>
-                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-down text-lg"></i></div>
+                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl"><i class="fa-solid fa-arrow-down text-lg"></i></div>
                 </div>
-
-                <!-- Kartu Total Pengeluaran -->
-                <div onclick="filterHistory('OUT')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-rose-400 hover:shadow-md transition-all cursor-pointer group">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider group-hover:text-rose-600 transition-colors">Total Pengeluaran (Klik)</p>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Pengeluaran</p>
                         <h4 id="card-keluar" class="text-lg font-bold text-rose-600 mt-0.5">Rp 0</h4>
                     </div>
-                    <div class="bg-rose-50 text-rose-600 p-3 rounded-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-up text-lg"></i></div>
+                    <div class="bg-rose-50 text-rose-600 p-3 rounded-xl"><i class="fa-solid fa-arrow-up text-lg"></i></div>
                 </div>
             </div>
         </section>
 
-        <!-- Form Input Transaksi -->
+        <!-- Form Input Transaksi (Disembunyikan secara default) -->
         <section id="form-section" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-200 transition-all duration-300">
             <h3 id="form-title" class="font-semibold text-slate-800 mb-4 flex items-center justify-between">
                 <div class="flex items-center">
@@ -128,7 +127,7 @@
             </form>
         </section>
 
-        <!-- Tombol Riwayat Transaksi -->
+        <!-- Tombol Riwayat Transaksi di Paling Bawah -->
         <section class="pt-2">
             <button onclick="toggleHistory()" class="w-full bg-gradient-to-br from-indigo-600 to-violet-800 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between">
                 <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-clock-rotate-left"></i></div>
@@ -145,13 +144,14 @@
             </button>
         </section>
 
-        <!-- Bagian Riwayat Transaksi -->
+        <!-- Bagian Riwayat Transaksi (Disembunyikan secara default, muncul saat tombol diklik) -->
         <section id="history-section" class="hidden space-y-3 transition-all duration-300">
             <div class="flex justify-between items-center px-1">
-                <h3 id="history-title-text" class="font-semibold text-slate-800 flex items-center text-sm uppercase tracking-wider">
+                <h3 class="font-semibold text-slate-800 flex items-center text-sm uppercase tracking-wider">
                     <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat Transaksi
                 </h3>
                 <div class="flex items-center space-x-2">
+                    <!-- Tombol Reset Histori -->
                     <button onclick="resetHistory()" class="text-xs bg-rose-50 text-rose-600 hover:bg-rose-100 px-2.5 py-1 rounded-full font-medium transition-colors cursor-pointer flex items-center">
                         <i class="fa-solid fa-trash-can mr-1"></i> Reset
                     </button>
@@ -159,14 +159,15 @@
                 </div>
             </div>
             
+            <!-- Container Daftar Kartu Riwayat -->
             <div id="transaction-list" class="space-y-3">
-                <!-- List transaksi -->
+                <!-- Kartu riwayat akan dimasukkan secara dinamis di sini -->
             </div>
         </section>
 
     </main>
 
-    <!-- Tombol Scroll to Top -->
+    <!-- Tombol Mengambang (Floating Scroll-to-Top Button) -->
     <button id="scroll-top-btn" onclick="scrollToTop()" class="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform scale-0 z-50 cursor-pointer">
         <i class="fa-solid fa-arrow-up text-lg"></i>
     </button>
@@ -178,8 +179,12 @@
 
     <!-- JavaScript Utama -->
     <script>
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzlT7KleQLqfOj983zWkxZ1FNPhV8O5N1wFVyFfhLkGTJ86AoGMIb8RZMF8Lpu1wSWA/exec exec";
+        // ==========================================
+        // URL GAS WEB APP ANDA
+        // ==========================================
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgS3ze4fXnVIIPRa7_AgtzNrk4M5Z-GLOrEFBpgpNFYVQTx1FLjJx6qy6hdeTSI4Di/exec";[cite: 7]
 
+        // Sistem User ID Otomatis Berdasarkan Perangkat (Tanpa Perlu Setup Manual)
         const STORAGE_KEY_USER_ID = "cash_app_device_uuid";
         function getUserId() {
             let uid = localStorage.getItem(STORAGE_KEY_USER_ID);
@@ -191,49 +196,66 @@
         }
         const USER_ID = getUserId();
 
-        const STORAGE_KEY_TX = "cash_app_transactions_v7";
-        const STORAGE_KEY_QUEUE = "cash_app_queue_v7";
+        // Local Storage Keys
+        const STORAGE_KEY_TX = "cash_app_transactions_v5";
+        const STORAGE_KEY_QUEUE = "cash_app_queue_v5";
 
+        // State Aplikasi
         let transactions = [];
         let pendingQueue = [];
         let currentType = 'IN';
-        let currentFilter = 'ALL'; // Menyimpan status filter: 'ALL', 'IN', atau 'OUT'
 
+        // Format Rupiah
         function formatRupiah(number) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
         }
 
+        // Buka Form Input dan Munculkan Sekaligus
         function openForm(type) {
             currentType = type;
-            document.getElementById("form-section").classList.remove("hidden");
+            
+            // Sembunyikan riwayat saat membuka form
+            document.getElementById("history-section").classList.add("hidden");
+            document.getElementById("history-btn-text").textContent = "Tampilkan Riwayat Transaksi";
+            document.getElementById("history-icon").className = "fa-solid fa-chevron-down";
+
+            const formSection = document.getElementById("form-section");
+            const formTitleText = document.getElementById("form-title-text");
+            const formIcon = document.getElementById("form-icon");
+            const submitBtn = document.getElementById("submit-btn");
+
+            formSection.classList.remove("hidden");
 
             if (type === 'IN') {
-                document.getElementById("form-title-text").textContent = "Input Pemasukan Baru";
-                document.getElementById("form-icon").className = "fa-solid fa-circle-plus text-emerald-600 mr-2";
-                document.getElementById("submit-btn").className = "bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center cursor-pointer";
-                document.getElementById("submit-btn").innerHTML = '<i class="fa-solid fa-plus mr-2"></i> Simpan Pemasukan';
+                formTitleText.textContent = "Input Pemasukan Baru";
+                formIcon.className = "fa-solid fa-circle-plus text-emerald-600 mr-2";
+                submitBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center cursor-pointer";
+                submitBtn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i> Simpan Pemasukan';
             } else {
-                document.getElementById("form-title-text").textContent = "Input Pengeluaran Baru";
-                document.getElementById("form-icon").className = "fa-solid fa-circle-minus text-rose-600 mr-2";
-                document.getElementById("submit-btn").className = "bg-rose-600 hover:bg-rose-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center cursor-pointer";
-                document.getElementById("submit-btn").innerHTML = '<i class="fa-solid fa-minus mr-2"></i> Simpan Pengeluaran';
+                formTitleText.textContent = "Input Pengeluaran Baru";
+                formIcon.className = "fa-solid fa-circle-minus text-rose-600 mr-2";
+                submitBtn.className = "bg-rose-600 hover:bg-rose-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center cursor-pointer";
+                submitBtn.innerHTML = '<i class="fa-solid fa-minus mr-2"></i> Simpan Pengeluaran';
             }
 
-            document.getElementById("form-section").scrollIntoView({ behavior: 'smooth', block: 'center' });
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             document.getElementById("tx-amount").focus();
         }
 
+        // Tutup / Sembunyikan Form
         function closeForm() {
-            document.getElementById("form-section").classList.add("hidden");
+            const formSection = document.getElementById("form-section");
+            formSection.classList.add("hidden");
             document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        // Toggle Tampilkan / Sembunyikan Riwayat Transaksi
         function toggleHistory() {
-            currentFilter = 'ALL'; // Reset filter ke semua transaksi
             const historySection = document.getElementById("history-section");
             const btnText = document.getElementById("history-btn-text");
             const historyIcon = document.getElementById("history-icon");
 
+            // Tutup form input jika sedang terbuka
             document.getElementById("form-section").classList.add("hidden");
 
             if (historySection.classList.contains("hidden")) {
@@ -247,43 +269,23 @@
                 historyIcon.className = "fa-solid fa-chevron-down";
                 document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-            renderUI();
         }
 
-        // Fungsi khusus saat kartu Total Pemasukan atau Total Pengeluaran diklik
-        function filterHistory(type) {
-            currentFilter = type;
-            const historySection = document.getElementById("history-section");
-            const btnText = document.getElementById("history-btn-text");
-            const historyIcon = document.getElementById("history-icon");
-
-            document.getElementById("form-section").classList.add("hidden");
-            historySection.classList.remove("hidden");
-
-            if (type === 'IN') {
-                btnText.textContent = "Sembunyikan Riwayat Pemasukan";
-            } else {
-                btnText.textContent = "Sembunyikan Riwayat Pengeluaran";
-            }
-            historyIcon.className = "fa-solid fa-chevron-up";
-
-            renderUI();
-            historySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
+        // Fungsi Reset Histori (Lokal & Server Google Sheets)
         async function resetHistory() {
             if (confirm("Apakah Anda yakin ingin mereset dan menghapus seluruh histori transaksi Anda secara permanen?")) {
                 localStorage.removeItem(STORAGE_KEY_TX);
                 localStorage.removeItem(STORAGE_KEY_QUEUE);
                 transactions = [];
                 pendingQueue = [];
-                currentFilter = 'ALL';
                 renderUI();
                 
                 if (navigator.onLine) {
                     try {
-                        const params = new URLSearchParams({ action: 'reset', userId: USER_ID });
-                        await fetch(`${GAS_WEB_APP_URL}?${params.toString()}`);
+                        await fetch(GAS_WEB_APP_URL, {
+                            method: "POST",
+                            body: JSON.stringify({ action: "reset", userId: USER_ID })
+                        });
                     } catch (error) {
                         console.error("Gagal mereset server:", error);
                     }
@@ -297,10 +299,12 @@
             }
         }
 
+        // Fungsi Scroll ke Atas Instan
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Deteksi Posisi Scroll untuk Munculkan / Sembunyikan Tombol Panah ke Atas
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('scroll-top-btn');
             if (window.scrollY > 250) {
@@ -312,6 +316,7 @@
             }
         });
 
+        // Update Indikator Status
         function updateStatus(state) {
             const badge = document.getElementById("sync-status");
             const dot = document.getElementById("status-dot");
@@ -340,47 +345,29 @@
             }
         }
 
-        // Render UI Dashboard dan Filter Riwayat
+        // Render UI Dashboard dan Kartu Riwayat Transaksi
         function renderUI() {
             let totalMasuk = 0;
             let totalKeluar = 0;
 
-            // Hitung total dari seluruh transaksi untuk kartu dashboard
-            transactions.forEach(tx => {
-                if (tx.type === "IN") {
-                    totalMasuk += tx.amount;
-                } else {
-                    totalKeluar += tx.amount;
-                }
-            });
-
             const listEl = document.getElementById("transaction-list");
             listEl.innerHTML = "";
 
-            // Tentukan judul riwayat dan saring transaksi sesuai tombol yang diklik
-            const titleEl = document.getElementById("history-title-text");
-            let displayedTx = [...transactions];
-
-            if (currentFilter === 'IN') {
-                titleEl.innerHTML = `<i class="fa-solid fa-arrow-down text-emerald-600 mr-2"></i> Daftar Riwayat Pemasukan`;
-                displayedTx = transactions.filter(tx => tx.type === 'IN');
-            } else if (currentFilter === 'OUT') {
-                titleEl.innerHTML = `<i class="fa-solid fa-arrow-up text-rose-600 mr-2"></i> Daftar Riwayat Pengeluaran`;
-                displayedTx = transactions.filter(tx => tx.type === 'OUT');
-            } else {
-                titleEl.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat Transaksi`;
-                displayedTx = transactions;
-            }
-
-            const sortedTx = displayedTx.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const sortedTx = [...transactions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
             if (sortedTx.length === 0) {
                 listEl.innerHTML = `
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center text-slate-400 text-sm shadow-sm">
-                        Belum ada data ${currentFilter === 'IN' ? 'pemasukan' : currentFilter === 'OUT' ? 'pengeluaran' : 'transaksi'} kas.
+                        Belum ada data transaksi kas.
                     </div>`;
             } else {
                 sortedTx.forEach(tx => {
+                    if (tx.type === "IN") {
+                        totalMasuk += tx.amount;
+                    } else {
+                        totalKeluar += tx.amount;
+                    }
+
                     const card = document.createElement("div");
                     card.className = "bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-slate-300 transition-all";
                     card.innerHTML = `
@@ -394,7 +381,7 @@
                             </div>
                         </div>
                         <div class="text-right font-bold text-sm sm:text-base ${tx.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">
-                            ${tx.type === 'IN' ? '+' : '-'}${formatRupiah(tx.amount)}
+                            ${tx.type === 'IN' ? '+' : '-'} ${formatRupiah(tx.amount)}
                         </div>
                     `;
                     listEl.appendChild(card);
@@ -407,47 +394,49 @@
             document.getElementById("card-masuk").textContent = formatRupiah(totalMasuk);
             document.getElementById("card-keluar").textContent = formatRupiah(totalKeluar);
             document.getElementById("tx-count").textContent = `${transactions.length} transaksi`;
-            document.getElementById("tx-count-label`").textContent = `${sortedTx.length} ditampilkan`;
+            document.getElementById("tx-count-label").textContent = `${transactions.length} transaksi`;
         }
 
+        // Helper escape HTML untuk mencegah XSS
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
+        // Load Cache saat Aplikasi Dibuka (Fast-UI)
         function loadCache() {
             const cachedTx = localStorage.getItem(STORAGE_KEY_TX);
             const cachedQueue = localStorage.getItem(STORAGE_KEY_QUEUE);
 
-            if (cachedTx) transactions = JSON.parse(cachedTx);
-            if (cachedQueue) pendingQueue = JSON.parse(cachedQueue);
+            if (cachedTx) {
+                transactions = JSON.parse(cachedTx);
+            }
+            if (cachedQueue) {
+                pendingQueue = JSON.parse(cachedQueue);
+            }
 
             renderUI();
         }
 
+        // Simpan Cache Lokal
         function saveCache() {
             localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
             localStorage.setItem(STORAGE_KEY_QUEUE, JSON.stringify(pendingQueue));
         }
 
+        // Sinkronisasi Background dengan GAS
         async function syncQueue() {
             if (!navigator.onLine || pendingQueue.length === 0) return;
 
             updateStatus("syncing");
             const item = pendingQueue[0];
-
-            const params = new URLSearchParams({
-                action: 'add',
-                userId: USER_ID,
-                id: item.id,
-                type: item.type,
-                amount: item.amount,
-                description: item.description,
-                timestamp: item.timestamp,
-                date: item.date
-            });
+            item.userId = USER_ID;
 
             try {
-                const response = await fetch(`${GAS_WEB_APP_URL}?${params.toString()}`);
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(item)
+                });
+
                 const result = await response.json();
 
                 if (result.status === "success") {
@@ -469,6 +458,7 @@
             }
         }
 
+        // Ambil data terbaru dari Server di Background (difilter berdasarkan USER_ID)
         async function fetchLatestFromServer() {
             if (!navigator.onLine) return;
 
@@ -494,6 +484,7 @@
             }
         }
 
+        // Event Listener Form Submit (Optimistic UI & Sembunyikan Form setelah Input)
         document.getElementById("transaction-form").addEventListener("submit", function(e) {
             e.preventDefault();
 
@@ -517,9 +508,11 @@
             saveCache();
             renderUI();
 
+            // Reset Form Input
             document.getElementById("tx-amount").value = "";
             document.getElementById("tx-desc").value = "";
 
+            // Sembunyikan form kembali dan scroll ke dashboard utama
             document.getElementById("form-section").classList.add("hidden");
             document.getElementById("dashboard-section").scrollIntoView({ behavior: 'smooth', block: 'start' });
 
