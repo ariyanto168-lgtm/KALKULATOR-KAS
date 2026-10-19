@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kalkulator Kas - Multi-User Mandiri</title>
 
-<!-- === UPDATE v1.6.0: KONFIGURASI WEB APP & LOGO PINTASAN HP === -->
+<!-- === KONFIGURASI WEB APP & LOGO PINTASAN HP === -->
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,12 +13,11 @@
 <meta name="application-name" content="Kalkulator Kas">
 <meta name="theme-color" content="#312e81">
 
-<!-- Link Ikon Baru (Ganti baris yang lama dengan ini) -->
+<!-- Link Ikon Logo Baru -->
 <link rel="icon" type="image/jpeg" href="logo-kas.jpg">
 <link rel="apple-touch-icon" href="logo-kas.jpg">
 <link rel="manifest" href="manifest.json">
-  
-<!-- ============================================================ -->
+<!-- ============================================ -->
 
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -31,7 +30,7 @@ body { font-family: 'Inter', sans-serif; }
 </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
-<!-- Header & Status Bar (Full Color) -->
+<!-- Header & Status Bar -->
 <header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 text-white border-b border-indigo-700 sticky top-0 z-30 shadow-md">
 <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
 <div class="flex items-center space-x-2.5">
@@ -40,7 +39,7 @@ body { font-family: 'Inter', sans-serif; }
 </div>
 <div>
 <h1 class="font-bold text-lg text-white tracking-tight">Kalkulator Kas</h1>
-<p class="text-xs font-semibold text-indigo-200">v1.6.0</p>
+<p class="text-xs font-semibold text-indigo-200">v1.7.0</p>
 </div>
 </div>
 <!-- Indikator Status & Powered By -->
@@ -58,7 +57,7 @@ body { font-family: 'Inter', sans-serif; }
 <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-grow space-y-6">
 <!-- DASHBOARD SECTION -->
 <section id="dashboard-section" class="space-y-4">
-<!-- 1. Kartu Dashboard Utama: Total Saldo Kas -->
+<!-- 1. Kartu Dashboard Utama -->
 <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between">
 <div class="absolute -right-4 -bottom-4 text-white/10 text-7xl"><i class="fa-solid fa-vault"></i></div>
 <div>
@@ -70,9 +69,9 @@ body { font-family: 'Inter', sans-serif; }
 <span id="tx-count" class="bg-white/20 px-2.5 py-0.5 rounded-full font-medium">0 transaksi</span>
 </div>
 </div>
-<!-- 2. Tombol Pemasukan & Pengeluaran Berdampingan -->
+<!-- 2. Tombol Pemasukan & Pengeluaran -->
 <div class="grid grid-cols-2 gap-4">
-<button onclick="openForm('IN')" class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
+<button type="button" onclick="openForm('IN')" class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
 <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-trend-up"></i></div>
 <div class="flex items-center space-x-1.5 text-emerald-100 text-xs font-semibold uppercase tracking-wider mb-1">
 <i class="fa-solid fa-circle-plus"></i>
@@ -80,7 +79,7 @@ body { font-family: 'Inter', sans-serif; }
 </div>
 <div class="text-base sm:text-lg font-bold tracking-tight">+ Input Masuk</div>
 </button>
-<button onclick="openForm('OUT')" class="bg-gradient-to-br from-rose-500 to-pink-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
+<button type="button" onclick="openForm('OUT')" class="bg-gradient-to-br from-rose-500 to-pink-700 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer">
 <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-arrow-trend-down"></i></div>
 <div class="flex items-center space-x-1.5 text-rose-100 text-xs font-semibold uppercase tracking-wider mb-1">
 <i class="fa-solid fa-circle-minus"></i>
@@ -138,7 +137,7 @@ body { font-family: 'Inter', sans-serif; }
 
 <!-- Tombol Riwayat Transaksi -->
 <section class="pt-2">
-<button onclick="toggleHistory()" class="w-full bg-gradient-to-br from-indigo-600 to-violet-800 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between">
+<button type="button" onclick="toggleHistory()" class="w-full bg-gradient-to-br from-indigo-600 to-violet-800 text-white p-4 rounded-2xl shadow-md text-left relative overflow-hidden group transform hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between">
 <div class="absolute -right-3 -bottom-3 text-white/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-clock-rotate-left"></i></div>
 <div>
 <div class="flex items-center space-x-1.5 text-indigo-100 text-xs font-semibold uppercase tracking-wider mb-1">
@@ -160,7 +159,7 @@ body { font-family: 'Inter', sans-serif; }
 <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> Daftar Riwayat
 </h3>
 <div class="flex items-center space-x-2">
-<button onclick="resetHistory()" class="text-xs bg-rose-50 text-rose-600 hover:bg-rose-100 px-2.5 py-1 rounded-full font-medium transition-colors cursor-pointer flex items-center">
+<button type="button" onclick="resetHistory()" class="text-xs bg-rose-50 text-rose-600 hover:bg-rose-100 px-2.5 py-1 rounded-full font-medium transition-colors cursor-pointer flex items-center">
 <i class="fa-solid fa-trash-can mr-1"></i> Reset
 </button>
 <span id="tx-count-label" class="text-xs bg-slate-200/70 text-slate-600 px-2.5 py-1 rounded-full font-medium">0 transaksi</span>
@@ -173,13 +172,13 @@ body { font-family: 'Inter', sans-serif; }
 </main>
 
 <!-- Tombol Scroll ke Atas -->
-<button id="scroll-top-btn" onclick="scrollToTop()" class="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform scale-0 z-50 cursor-pointer">
+<button type="button" id="scroll-top-btn" onclick="scrollToTop()" class="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform scale-0 z-50 cursor-pointer">
 <i class="fa-solid fa-arrow-up text-lg"></i>
 </button>
 
 <!-- Footer -->
 <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 mt-8">
-Kalkulator Kas v1.6.0 &bull; Multi-User Mandiri Architecture
+Kalkulator Kas v1.7.0 &bull; Multi-User Mandiri Architecture
 </footer>
 
 <!-- JavaScript Utama -->
@@ -196,8 +195,10 @@ function getUserId() {
   return uid;
 }
 const USER_ID = getUserId();
-const STORAGE_KEY_TX = "cash_app_transactions_v6";
-const STORAGE_KEY_QUEUE = "cash_app_queue_v6";
+
+// === UPDATE v1.7.0: Versi DB Lokal Dinaikkan agar terbebas dari bug memori lama ===
+const STORAGE_KEY_TX = "cash_app_transactions_v7";
+const STORAGE_KEY_QUEUE = "cash_app_queue_v7";
 
 let transactions = [];
 let pendingQueue = [];
@@ -207,7 +208,7 @@ function formatRupiah(number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
 }
 
-function openForm(type) {
+window.openForm = function(type) {
   currentType = type;
   document.getElementById("history-section").classList.add("hidden");
   document.getElementById("history-btn-text").textContent = "Tampilkan Riwayat Transaksi";
@@ -234,15 +235,15 @@ function openForm(type) {
   
   formSection.scrollIntoView({behavior: 'smooth', block: 'center' });
   document.getElementById("tx-amount").focus();
-}
+};
 
-function closeForm() {
+window.closeForm = function() {
   const formSection = document.getElementById("form-section");
   formSection.classList.add("hidden");
   document.getElementById("dashboard-section").scrollIntoView({behavior: 'smooth', block: 'start' });
-}
+};
 
-function toggleHistory() {
+window.toggleHistory = function() {
   const historySection = document.getElementById("history-section");
   const btnText = document.getElementById("history-btn-text");
   const historyIcon = document.getElementById("history-icon");
@@ -260,9 +261,9 @@ function toggleHistory() {
     historyIcon.className = "fa-solid fa-chevron-down";
     document.getElementById("dashboard-section").scrollIntoView({behavior: 'smooth', block: 'start' });
   }
-}
+};
 
-async function resetHistory() {
+window.resetHistory = async function() {
   if (confirm("Apakah Anda yakin ingin mereset dan menghapus seluruh histori transaksi Anda secara permanen?")) {
     localStorage.removeItem(STORAGE_KEY_TX);
     localStorage.removeItem(STORAGE_KEY_QUEUE);
@@ -287,11 +288,11 @@ async function resetHistory() {
     document.getElementById("dashboard-section").scrollIntoView({behavior: 'smooth', block: 'start' });
     alert("Histori transaksi berhasil direset.");
   }
-}
+};
 
-function scrollToTop() {
+window.scrollToTop = function() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+};
 
 window.addEventListener('scroll', () => {
   const btn = document.getElementById('scroll-top-btn');
@@ -432,4 +433,87 @@ async function syncQueue() {
   }
 }
 
-async function fetchLat
+async function fetchLatestFromServer() {
+  if (!navigator.onLine) return;
+  try {
+    const response = await fetch(`${GAS_WEB_APP_URL}?userId=${USER_ID}`);
+    const result = await response.json();
+    if (result.status === "success" && Array.isArray(result.data)) {
+      const pendingIds = new Set(pendingQueue.map(p => p.id));
+      const serverData = result.data;
+      const localPendingItems = transactions.filter(t => pendingIds.has(t.id));
+      const map = new Map();
+      serverData.forEach(item => map.set(item.id, item));
+      localPendingItems.forEach(item => map.set(item.id, item));
+      transactions = Array.from(map.values());
+      saveCache();
+      renderUI();
+    }
+  } catch (error) {
+    console.error("Gagal mengambil data terbaru:", error);
+  }
+}
+
+document.getElementById("transaction-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const amount = Number(document.getElementById("tx-amount").value);
+  const description = document.getElementById("tx-desc").value.trim();
+  if (!amount || !description) return;
+  
+  const now = new Date();
+  const newTx = {
+    id: "TX-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
+    type: currentType,
+    amount: amount,
+    description: description,
+    timestamp: now.toISOString(),
+    date: now.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  };
+  
+  transactions.push(newTx);
+  pendingQueue.push(newTx);
+  saveCache();
+  renderUI();
+  
+  document.getElementById("tx-amount").value = "";
+  document.getElementById("tx-desc").value = "";
+  document.getElementById("form-section").classList.add("hidden");
+  document.getElementById("dashboard-section").scrollIntoView({behavior: 'smooth', block: 'start' });
+  
+  syncQueue();
+});
+
+window.addEventListener('online', () => {
+  updateStatus("syncing");
+  syncQueue();
+  fetchLatestFromServer();
+});
+
+window.addEventListener('offline', () => {
+  updateStatus("offline");
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    loadCache();
+    if (navigator.onLine) {
+      fetchLatestFromServer();
+      if (pendingQueue.length > 0) {
+        syncQueue();
+      }
+    } else {
+      updateStatus("offline");
+    }
+  } catch (e) {
+    console.error("Error saat inisialisasi:", e);
+  }
+});
+
+window.addEventListener('focus', () => {
+  if (navigator.onLine) {
+    fetchLatestFromServer();
+  }
+});
+</script>
+</body>
+</html>
