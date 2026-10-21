@@ -57,8 +57,8 @@ body { font-family: 'Inter', sans-serif; }
     
     <!-- Tahap 1: Minta Email -->
     <div id="otp-step-1">
-      <p class="text-sm text-slate-500 mb-4">Masukkan email aktif Anda. Kami akan mengirimkan 6 digit OTP.</p>
-      <input type="email" id="otp-email" placeholder="contoh@email.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+      <p class="text-sm text-slate-500 mb-4">Masukkan email pemulihan yang sudah Anda simpan di Pengaturan.</p>
+      <input type="email" id="otp-email" placeholder="contoh@gmail.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
       <button id="btn-req-otp" onclick="requestOTP()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md">Kirim OTP</button>
     </div>
 
@@ -71,23 +71,40 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
-<!-- MODAL PENGATURAN (GANTI PIN) -->
+<!-- MODAL PENGATURAN (GANTI PIN & EMAIL) -->
 <div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-[90] flex flex-col items-center justify-center px-4 backdrop-blur-sm transition-opacity">
-  <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-sm">
+  <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-sm max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-5">
       <h3 class="font-bold text-slate-800 text-lg"><i class="fa-solid fa-gear mr-2 text-indigo-600"></i> Pengaturan</h3>
       <button onclick="closeSettings()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="space-y-4">
-      <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">PIN Lama</label>
-        <input type="password" id="old-pin" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    
+    <div class="space-y-5">
+      <!-- Bagian 1: Ganti PIN -->
+      <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+        <h4 class="text-sm font-bold text-slate-700 mb-3"><i class="fa-solid fa-lock mr-1.5 text-indigo-500"></i>Ubah Keamanan PIN</h4>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">PIN Lama</label>
+            <input type="password" id="old-pin" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">PIN Baru (Min. 4 Digit)</label>
+            <input type="password" id="new-pin" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <button onclick="changePin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition-all shadow-md text-sm">Simpan PIN Baru</button>
+        </div>
       </div>
-      <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">PIN Baru</label>
-        <input type="password" id="new-pin" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+      <!-- Bagian 2: Tanam Email Asli -->
+      <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+        <h4 class="text-sm font-bold text-slate-700 mb-1"><i class="fa-solid fa-envelope mr-1.5 text-emerald-600"></i>Email Pemulihan</h4>
+        <p class="text-[10px] text-slate-500 mb-3 leading-relaxed">Tanamkan email asli Anda di sini. Email lain tidak akan bisa mereset PIN Anda.</p>
+        <div class="space-y-3">
+          <input type="email" id="recovery-email" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="contoh@gmail.com">
+          <button onclick="saveEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl transition-all shadow-md text-sm">Simpan Email Pemulihan</button>
+        </div>
       </div>
-      <button onclick="changePin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition-all shadow-md mt-2">Simpan PIN Baru</button>
     </div>
   </div>
 </div>
@@ -101,18 +118,16 @@ body { font-family: 'Inter', sans-serif; }
     </div>
     <div>
       <h1 class="font-bold text-lg text-white tracking-tight">Kalkulator Kas</h1>
-      <p class="text-xs font-semibold text-indigo-200">v1.8.0</p>
+      <p class="text-xs font-semibold text-indigo-200">v1.8.2</p>
     </div>
   </div>
   
-  <!-- REVISI: Ikon Setting & Status Indikator Tanpa Teks -->
+  <!-- Ikon Setting & Status Indikator -->
   <div class="flex flex-col items-end">
     <div class="flex items-center space-x-3.5">
-      <!-- Indikator Sinkronisasi (Hanya Titik Warna) -->
       <div id="sync-status" title="Status Sinkronisasi" class="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/30 transition-all duration-300 shadow-inner">
         <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
       </div>
-      <!-- Tombol Setting -->
       <button onclick="openSettings()" class="text-indigo-100 hover:text-white transition-colors transform hover:rotate-90 duration-300" title="Pengaturan">
         <i class="fa-solid fa-gear text-xl"></i>
       </button>
@@ -247,7 +262,7 @@ body { font-family: 'Inter', sans-serif; }
 
 <!-- Footer -->
 <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 mt-8">
-Kalkulator Kas v1.8.0 &bull; Multi-User Mandiri Architecture
+Kalkulator Kas v1.8.2 &bull; Multi-User Mandiri Architecture
 </footer>
 
 <!-- JavaScript Utama -->
@@ -258,11 +273,14 @@ Kalkulator Kas v1.8.0 &bull; Multi-User Mandiri Architecture
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgS3ze4fXnVIIPRa7_AgtzNrk4M5Z-GLOrEFBpgpNFYVQTx1FLjJx6qy6hdeTSI4Di/exec";
 
 // ===============================================
-// FITUR KEAMANAN (PIN & OTP)
+// FITUR KEAMANAN (PIN & OTP EMAIL) DINAMIS
 // ===============================================
 const DEFAULT_PIN = "kamunanyak";
 const STORAGE_KEY_PIN = "cash_app_user_pin";
+const STORAGE_KEY_EMAIL = "cash_app_recovery_email";
+
 let currentPin = localStorage.getItem(STORAGE_KEY_PIN) || DEFAULT_PIN;
+let registeredEmail = localStorage.getItem(STORAGE_KEY_EMAIL) || "";
 let temporaryOTP = null;
 
 // Fungsi Login PIN
@@ -284,15 +302,17 @@ window.loginApp = function() {
   }
 };
 
-// Deteksi tombol Enter saat login
 document.getElementById("login-pin-input").addEventListener("keypress", function(e) {
   if(e.key === "Enter") loginApp();
 });
 
-// Buka & Tutup Pengaturan Ganti PIN
+// Buka & Tutup Pengaturan
 window.openSettings = function() {
   document.getElementById("settings-modal").classList.remove("hidden");
+  // Tampilkan email yang tertanam saat ini (jika ada) di form pengaturan
+  document.getElementById("recovery-email").value = registeredEmail;
 };
+
 window.closeSettings = function() {
   document.getElementById("settings-modal").classList.add("hidden");
   document.getElementById("old-pin").value = "";
@@ -319,7 +339,19 @@ window.changePin = function() {
   closeSettings();
 };
 
-// Buka Modal Lupa PIN
+// Tanam (Simpan) Email Pemulihan dari Menu Pengaturan
+window.saveEmail = function() {
+  const newEmail = document.getElementById("recovery-email").value.trim();
+  if(!newEmail || !newEmail.includes("@")) {
+    alert("Masukkan format email yang valid!");
+    return;
+  }
+  registeredEmail = newEmail;
+  localStorage.setItem(STORAGE_KEY_EMAIL, newEmail);
+  alert("Email pemulihan (" + newEmail + ") berhasil ditanam di perangkat ini!");
+};
+
+// Modal Lupa PIN
 window.openForgotPin = function() {
   document.getElementById("forgot-pin-overlay").classList.remove("hidden");
 };
@@ -329,15 +361,21 @@ window.closeForgotPin = function() {
   document.getElementById("otp-step-2").classList.add("hidden");
 };
 
-// Kirim Request OTP ke GAS Email
+// Kirim Request OTP ke GAS Email & VALIDASI EMAIL TERTANAM
 window.requestOTP = async function() {
-  const email = document.getElementById("otp-email").value;
-  if(!email || !email.includes("@")) {
-    alert("Masukkan alamat email yang valid!");
+  const email = document.getElementById("otp-email").value.trim();
+  
+  if (!registeredEmail) {
+    alert("Anda belum menanamkan Email Pemulihan di menu Pengaturan. Karena keamanan, PIN tidak bisa direset.");
     return;
   }
   
-  // Buat OTP 6 Digit Random
+  // VALIDASI EMAIL: Cocokkan email input dengan email yang sudah ditanam
+  if(email !== registeredEmail) {
+    alert("Akses Ditolak! Email yang Anda masukkan tidak cocok dengan email pemulihan yang tersimpan.");
+    return;
+  }
+  
   temporaryOTP = Math.floor(100000 + Math.random() * 900000).toString();
   const btnReq = document.getElementById("btn-req-otp");
   btnReq.innerHTML = "Mengirim...";
@@ -363,7 +401,6 @@ window.requestOTP = async function() {
   btnReq.disabled = false;
 };
 
-// Verifikasi OTP & Reset PIN ke Default
 window.verifyOTP = function() {
   const inputOTP = document.getElementById("otp-code").value;
   if(inputOTP === temporaryOTP) {
@@ -498,7 +535,6 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// REVISI: Modifikasi UI Header agar Teks Tersimpan Hilang dan Hanya Indikator Saja
 function updateStatus(state) {
   const badge = document.getElementById("sync-status");
   const dot = document.getElementById("status-dot");
@@ -672,7 +708,7 @@ document.getElementById("transaction-form").addEventListener("submit", function(
   syncQueue();
 });
 
-// Event Listener hanya akan dijalankan (aplikasi inti memuat) jika PIN sudah login (di handle dalam loginApp())
+// Event Listener hanya akan dijalankan jika PIN sudah login
 window.addEventListener('online', () => {
   if (document.getElementById("pin-login-overlay").classList.contains("hidden")) {
     updateStatus("syncing");
@@ -682,8 +718,8 @@ window.addEventListener('online', () => {
 });
 window.addEventListener('offline', () => { updateStatus("offline"); });
 window.addEventListener('DOMContentLoaded', () => {
-  document.body.classList.add("no-scroll"); // kunci scroll layar utama saat login
-  updateStatus("saved"); // siapkan indikator awal
+  document.body.classList.add("no-scroll");
+  updateStatus("saved");
 });
 </script>
 </body>
