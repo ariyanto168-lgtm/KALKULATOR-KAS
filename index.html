@@ -13,7 +13,7 @@
 <meta name="application-name" content="Kalkulator Kas">
 <meta name="theme-color" content="#312e81">
 
-<!-- Link Ikon Logo Baru -->
+<!-- Link Ikon Logo -->
 <link rel="icon" type="image/jpeg" href="logo-kas.jpg">
 <link rel="apple-touch-icon" href="logo-kas.jpg">
 <link rel="manifest" href="manifest.json">
@@ -27,33 +27,102 @@
 <link href="https://fonts.googleapis.com/css?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 body { font-family: 'Inter', sans-serif; }
+/* Mencegah scroll saat modal terbuka */
+.no-scroll { overflow: hidden; }
 </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
+
+<!-- LAYAR LOGIN PIN AWAL -->
+<div id="pin-login-overlay" class="fixed inset-0 bg-slate-100 z-[100] flex flex-col items-center justify-center px-4 transition-opacity duration-300">
+  <div class="bg-white p-7 rounded-3xl shadow-xl w-full max-w-xs text-center border border-slate-200">
+    <div class="bg-indigo-100 text-indigo-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+      <i class="fa-solid fa-lock text-2xl"></i>
+    </div>
+    <h2 class="text-xl font-bold text-slate-800 mb-1">Kalkulator Kas</h2>
+    <p class="text-xs text-slate-500 mb-6">Masukkan PIN Keamanan Aplikasi</p>
+    <input type="password" id="login-pin-input" class="w-full text-center tracking-widest text-lg bg-slate-50 border border-slate-300 rounded-xl px-4 py-3.5 mb-5 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••">
+    <button onclick="loginApp()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md mb-4">Buka Aplikasi</button>
+    <button onclick="openForgotPin()" class="text-xs text-indigo-600 hover:underline font-medium"><i class="fa-solid fa-key mr-1"></i>Lupa PIN?</button>
+  </div>
+</div>
+
+<!-- LAYAR LUPA PIN (OTP) -->
+<div id="forgot-pin-overlay" class="hidden fixed inset-0 bg-slate-100 z-[110] flex flex-col items-center justify-center px-4">
+  <div class="bg-white p-7 rounded-3xl shadow-xl w-full max-w-sm border border-slate-200">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="font-bold text-slate-800 text-lg">Reset PIN</h3>
+      <button onclick="closeForgotPin()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <!-- Tahap 1: Minta Email -->
+    <div id="otp-step-1">
+      <p class="text-sm text-slate-500 mb-4">Masukkan email aktif Anda. Kami akan mengirimkan 6 digit OTP.</p>
+      <input type="email" id="otp-email" placeholder="contoh@email.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+      <button id="btn-req-otp" onclick="requestOTP()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md">Kirim OTP</button>
+    </div>
+
+    <!-- Tahap 2: Input Kode OTP -->
+    <div id="otp-step-2" class="hidden">
+      <p class="text-sm text-slate-500 mb-4">Masukkan 6 digit kode OTP yang dikirim ke email Anda.</p>
+      <input type="number" id="otp-code" placeholder="123456" class="w-full text-center tracking-[0.5em] text-xl bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <button onclick="verifyOTP()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md">Verifikasi & Reset PIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PENGATURAN (GANTI PIN) -->
+<div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-[90] flex flex-col items-center justify-center px-4 backdrop-blur-sm transition-opacity">
+  <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-sm">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="font-bold text-slate-800 text-lg"><i class="fa-solid fa-gear mr-2 text-indigo-600"></i> Pengaturan</h3>
+      <button onclick="closeSettings()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">PIN Lama</label>
+        <input type="password" id="old-pin" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">PIN Baru</label>
+        <input type="password" id="new-pin" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <button onclick="changePin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition-all shadow-md mt-2">Simpan PIN Baru</button>
+    </div>
+  </div>
+</div>
+
 <!-- Header & Status Bar -->
 <header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 text-white border-b border-indigo-700 sticky top-0 z-30 shadow-md">
 <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-<div class="flex items-center space-x-2.5">
-<div class="bg-white/10 text-white p-2 rounded-xl backdrop-blur-sm border border-white/20 shadow-inner">
-<i class="fa-solid fa-wallet text-lg"></i>
-</div>
-<div>
-<h1 class="font-bold text-lg text-white tracking-tight">Kalkulator Kas</h1>
-<p class="text-xs font-semibold text-indigo-200">v1.7.0</p>
-</div>
-</div>
-<!-- Indikator Status & Powered By -->
-<div class="flex flex-col items-end">
-<div id="sync-status" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-sm transition-all duration-300">
-<span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-<span id="status-text">Tersimpan</span>
-</div>
-<span class="text-[10px] text-indigo-300 font-medium mt-1">Powered by Ari GPM</span>
-</div>
+  <div class="flex items-center space-x-2.5">
+    <div class="bg-white/10 text-white p-2 rounded-xl backdrop-blur-sm border border-white/20 shadow-inner">
+      <i class="fa-solid fa-wallet text-lg"></i>
+    </div>
+    <div>
+      <h1 class="font-bold text-lg text-white tracking-tight">Kalkulator Kas</h1>
+      <p class="text-xs font-semibold text-indigo-200">v1.8.0</p>
+    </div>
+  </div>
+  
+  <!-- REVISI: Ikon Setting & Status Indikator Tanpa Teks -->
+  <div class="flex flex-col items-end">
+    <div class="flex items-center space-x-3.5">
+      <!-- Indikator Sinkronisasi (Hanya Titik Warna) -->
+      <div id="sync-status" title="Status Sinkronisasi" class="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/30 transition-all duration-300 shadow-inner">
+        <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+      </div>
+      <!-- Tombol Setting -->
+      <button onclick="openSettings()" class="text-indigo-100 hover:text-white transition-colors transform hover:rotate-90 duration-300" title="Pengaturan">
+        <i class="fa-solid fa-gear text-xl"></i>
+      </button>
+    </div>
+    <span class="text-[10px] text-indigo-300 font-medium mt-1">Powered by Ari GPM</span>
+  </div>
 </div>
 </header>
 
-<!-- Konten Utama -->
+<!-- Konten Utama (Aplikasi Inti) -->
 <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-grow space-y-6">
 <!-- DASHBOARD SECTION -->
 <section id="dashboard-section" class="space-y-4">
@@ -178,14 +247,140 @@ body { font-family: 'Inter', sans-serif; }
 
 <!-- Footer -->
 <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 mt-8">
-Kalkulator Kas v1.7.0 &bull; Multi-User Mandiri Architecture
+Kalkulator Kas v1.8.0 &bull; Multi-User Mandiri Architecture
 </footer>
 
 <!-- JavaScript Utama -->
 <script>
+// ===============================================
+// PASTIKAN URL INI SESUAI DENGAN WEB APP GAS ANDA
+// ===============================================
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgS3ze4fXnVIIPRa7_AgtzNrk4M5Z-GLOrEFBpgpNFYVQTx1FLjJx6qy6hdeTSI4Di/exec";
-const STORAGE_KEY_USER_ID = "cash_app_device_uuid";
 
+// ===============================================
+// FITUR KEAMANAN (PIN & OTP)
+// ===============================================
+const DEFAULT_PIN = "kamunanyak";
+const STORAGE_KEY_PIN = "cash_app_user_pin";
+let currentPin = localStorage.getItem(STORAGE_KEY_PIN) || DEFAULT_PIN;
+let temporaryOTP = null;
+
+// Fungsi Login PIN
+window.loginApp = function() {
+  const inputPin = document.getElementById("login-pin-input").value;
+  if (inputPin === currentPin) {
+    document.getElementById("pin-login-overlay").classList.add("hidden");
+    document.body.classList.remove("no-scroll");
+    
+    // Inisialisasi data aplikasi setelah login berhasil
+    loadCache();
+    if (navigator.onLine) {
+      fetchLatestFromServer();
+      if (pendingQueue.length > 0) syncQueue();
+    }
+  } else {
+    alert("PIN salah! Silakan coba lagi.");
+    document.getElementById("login-pin-input").value = "";
+  }
+};
+
+// Deteksi tombol Enter saat login
+document.getElementById("login-pin-input").addEventListener("keypress", function(e) {
+  if(e.key === "Enter") loginApp();
+});
+
+// Buka & Tutup Pengaturan Ganti PIN
+window.openSettings = function() {
+  document.getElementById("settings-modal").classList.remove("hidden");
+};
+window.closeSettings = function() {
+  document.getElementById("settings-modal").classList.add("hidden");
+  document.getElementById("old-pin").value = "";
+  document.getElementById("new-pin").value = "";
+};
+
+// Ganti PIN
+window.changePin = function() {
+  const oldPin = document.getElementById("old-pin").value;
+  const newPin = document.getElementById("new-pin").value;
+  
+  if (oldPin !== currentPin) {
+    alert("PIN Lama salah!");
+    return;
+  }
+  if (!newPin || newPin.length < 4) {
+    alert("PIN Baru minimal 4 karakter!");
+    return;
+  }
+  
+  currentPin = newPin;
+  localStorage.setItem(STORAGE_KEY_PIN, newPin);
+  alert("PIN berhasil diubah!");
+  closeSettings();
+};
+
+// Buka Modal Lupa PIN
+window.openForgotPin = function() {
+  document.getElementById("forgot-pin-overlay").classList.remove("hidden");
+};
+window.closeForgotPin = function() {
+  document.getElementById("forgot-pin-overlay").classList.add("hidden");
+  document.getElementById("otp-step-1").classList.remove("hidden");
+  document.getElementById("otp-step-2").classList.add("hidden");
+};
+
+// Kirim Request OTP ke GAS Email
+window.requestOTP = async function() {
+  const email = document.getElementById("otp-email").value;
+  if(!email || !email.includes("@")) {
+    alert("Masukkan alamat email yang valid!");
+    return;
+  }
+  
+  // Buat OTP 6 Digit Random
+  temporaryOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  const btnReq = document.getElementById("btn-req-otp");
+  btnReq.innerHTML = "Mengirim...";
+  btnReq.disabled = true;
+
+  try {
+    const response = await fetch(GAS_WEB_APP_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "send_otp", email: email, otp: temporaryOTP })
+    });
+    const res = await response.json();
+    
+    if (res.status === "success") {
+      document.getElementById("otp-step-1").classList.add("hidden");
+      document.getElementById("otp-step-2").classList.remove("hidden");
+    } else {
+      alert("Gagal mengirim email: " + res.message);
+    }
+  } catch (error) {
+    alert("Terjadi kesalahan jaringan.");
+  }
+  btnReq.innerHTML = "Kirim OTP";
+  btnReq.disabled = false;
+};
+
+// Verifikasi OTP & Reset PIN ke Default
+window.verifyOTP = function() {
+  const inputOTP = document.getElementById("otp-code").value;
+  if(inputOTP === temporaryOTP) {
+    currentPin = DEFAULT_PIN;
+    localStorage.setItem(STORAGE_KEY_PIN, DEFAULT_PIN);
+    alert("PIN berhasil direset ke default: " + DEFAULT_PIN);
+    closeForgotPin();
+  } else {
+    alert("Kode OTP salah!");
+  }
+};
+
+
+// ===============================================
+// APLIKASI INTI (TRANSAKSI KAS)
+// ===============================================
+const STORAGE_KEY_USER_ID = "cash_app_device_uuid";
 function getUserId() {
   let uid = localStorage.getItem(STORAGE_KEY_USER_ID);
   if (!uid) {
@@ -195,8 +390,6 @@ function getUserId() {
   return uid;
 }
 const USER_ID = getUserId();
-
-// === UPDATE v1.7.0: Versi DB Lokal Dinaikkan agar terbebas dari bug memori lama ===
 const STORAGE_KEY_TX = "cash_app_transactions_v7";
 const STORAGE_KEY_QUEUE = "cash_app_queue_v7";
 
@@ -305,31 +498,27 @@ window.addEventListener('scroll', () => {
   }
 });
 
+// REVISI: Modifikasi UI Header agar Teks Tersimpan Hilang dan Hanya Indikator Saja
 function updateStatus(state) {
   const badge = document.getElementById("sync-status");
   const dot = document.getElementById("status-dot");
-  const text = document.getElementById("status-text");
   
   if (!navigator.onLine) {
-    badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-200 border border-amber-400/30 backdrop-blur-sm transition-all duration-300";
-    dot.className = "w-2 h-2 rounded-full bg-amber-400";
-    text.textContent = "Offline";
+    badge.className = "flex items-center justify-center w-7 h-7 rounded-full bg-amber-500/20 border border-amber-400/30 transition-all duration-300 shadow-inner";
+    dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400";
     return;
   }
   
   if (state === "syncing") {
-    badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-200 border border-blue-400/30 backdrop-blur-sm transition-all duration-300";
-    dot.className = "w-2 h-2 rounded-full bg-blue-400 animate-pulse";
-    text.textContent = "Menyinkronkan...";
+    badge.className = "flex items-center justify-center w-7 h-7 rounded-full bg-blue-500/20 border border-blue-400/30 transition-all duration-300 shadow-inner";
+    dot.className = "w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse";
   } else if (state === "synced") {
-    badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-sm transition-all duration-300";
-    dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-    text.textContent = "Tersinkron";
+    badge.className = "flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/30 transition-all duration-300 shadow-inner";
+    dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
     setTimeout(() => updateStatus("saved"), 3000);
   } else {
-    badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-sm transition-all duration-300";
-    dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-    text.textContent = "Tersimpan";
+    badge.className = "flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/30 transition-all duration-300 shadow-inner";
+    dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
   }
 }
 
@@ -483,36 +672,18 @@ document.getElementById("transaction-form").addEventListener("submit", function(
   syncQueue();
 });
 
+// Event Listener hanya akan dijalankan (aplikasi inti memuat) jika PIN sudah login (di handle dalam loginApp())
 window.addEventListener('online', () => {
-  updateStatus("syncing");
-  syncQueue();
-  fetchLatestFromServer();
-});
-
-window.addEventListener('offline', () => {
-  updateStatus("offline");
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-  try {
-    loadCache();
-    if (navigator.onLine) {
-      fetchLatestFromServer();
-      if (pendingQueue.length > 0) {
-        syncQueue();
-      }
-    } else {
-      updateStatus("offline");
-    }
-  } catch (e) {
-    console.error("Error saat inisialisasi:", e);
-  }
-});
-
-window.addEventListener('focus', () => {
-  if (navigator.onLine) {
+  if (document.getElementById("pin-login-overlay").classList.contains("hidden")) {
+    updateStatus("syncing");
+    syncQueue();
     fetchLatestFromServer();
   }
+});
+window.addEventListener('offline', () => { updateStatus("offline"); });
+window.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add("no-scroll"); // kunci scroll layar utama saat login
+  updateStatus("saved"); // siapkan indikator awal
 });
 </script>
 </body>
